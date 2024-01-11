@@ -8,3 +8,37 @@ from flask_login import UserMixin, login_user, LoginManager, current_user, logou
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'SECRET_KEY'
+Bootstrap5(app)
+
+
+# Configure Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///books.db"
+db = SQLAlchemy()
+db.init_app(app)
+
+# User database
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(250), unique=True, nullable=False)
+    name = db.Column(db.String(250), nullable=False)
+    password = db.Column(db.String(250), nullable=False)
+    food = db.relationship("Food", backref='user', lazy=True)
+
+
+class Food(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    recipe = db.Column(db.String(2000), nullable=True)
+    img_url = db.Column(db.String(250), nullable=True)
