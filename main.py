@@ -27,6 +27,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///books.db"
 db = SQLAlchemy()
 db.init_app(app)
 
+
 # User database
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,9 +37,23 @@ class User(UserMixin, db.Model):
     food = db.relationship("Food", backref='user', lazy=True)
 
 
+# food database
 class Food(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     recipe = db.Column(db.String(2000), nullable=True)
     img_url = db.Column(db.String(250), nullable=True)
+
+
+with app.app_context():
+    db.create_all()
+
+
+@app.route("/")
+def hello_world():
+    return render_template("base.html")
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
