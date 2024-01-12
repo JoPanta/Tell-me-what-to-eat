@@ -52,16 +52,22 @@ class ExampleFood(db.Model):
     recipe = db.Column(db.String(2000), nullable=True)
     img_url = db.Column(db.String(250), nullable=True)
 
+#
+# with app.app_context():
+#     db.create_all()
+#
+# with app.app_context():
+#     new_example_food = ExampleFood(name="One-pan cheat’s lamb meatball casserole", recipe="Using pre-seasoned lamb sausages and canned chickpeas makes this one-pan dish as easy as could be.",
+#                                    img_url="https://img.taste.com.au/Zr8d3MEd/w643-h428-cfill-q90/taste/2021/05/one-pan-cheatys-lamb-meatball-chickpea-casserole-171436-2.jpg")
+#     db.session.add(new_example_food)
+#     db.session.commit()
 
-with app.app_context():
-    db.create_all()
 
+@app.route("/", methods=["GET", 'POST'])
+def home():
+    example_food = ExampleFood.query.all()
 
-
-
-@app.route("/")
-def hello_world():
-    return render_template("base.html")
+    return render_template("base.html", example_food=example_food)
 
 
 if __name__ == '__main__':
