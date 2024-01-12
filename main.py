@@ -46,8 +46,17 @@ class Food(db.Model):
     img_url = db.Column(db.String(250), nullable=True)
 
 
+class ExampleFood(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    recipe = db.Column(db.String(2000), nullable=True)
+    img_url = db.Column(db.String(250), nullable=True)
+
+
 with app.app_context():
     db.create_all()
+
+
 
 
 @app.route("/")
