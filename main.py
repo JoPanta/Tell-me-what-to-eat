@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
@@ -63,12 +63,106 @@ class ExampleFood(db.Model):
 #     db.session.commit()
 
 
+class RegisterForm(FlaskForm):
+    email = StringField("Email:", validators=[DataRequired()])
+    name = StringField("Name:", validators=[DataRequired()])
+    password = PasswordField("Password:", validators=[DataRequired()])
+
+    submit = SubmitField("Sign Me Up!")
+
+
+class MealForm(FlaskForm):
+    name = StringField("Name:", validators=[DataRequired()])
+    recipe = StringField("Recipe:")
+    img_url = StringField("Image Link:", validators=[DataRequired()])
+
+
+class LoginForm(FlaskForm):
+    email = StringField("Email:", validators=[DataRequired()])
+    password = PasswordField("Password:", validators=[DataRequired()])
+    submit = SubmitField("Let Me In!")
+
+
 @app.route("/", methods=["GET", 'POST'])
 def home():
     example_food = ExampleFood.query.all()
 
-    return render_template("base.html", example_food=example_food)
+    return render_template("index.html", example_food=example_food)
 
+
+@app.route('/register', methods=["GET", "POST"])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        # check if the user is already in the database
+        result = db.session.execute(db.select(User).where(User.email == form.email.data))
+        user = result.scalar()
+        if user:
+            # User already exists
+            flash("You've already signed up with that email, log in instead!")
+            return redirect(url_for('login'))
+
+        hash_and_salted_password = generate_password_hash(
+            form.password.data,
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
+        new_user = User(
+            email=form.email.data,
+            name=form.name.data,
+            password=hash_and_salted_password,
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        # This line will authenticate the user with Flask-Login
+        login_user(new_user)
+        return redirect(url_for('home'))
+    return render_template("register.html", form=form, current_user=current_user)
+
+
+@app.route('/add_meal/<int:user_id>', methods=["GET", "POST"])
+def add_meal(user_id):
+    form = MealForm()
+    if form.validate_on_submit():
+        user_id = user_id,
+        name = form.name.data
+        recipe = form.recipe.data
+        img_url = form.img_url.data
+
+        new_food = Food(user_id=user_id, name=name, recipe=recipe, img_url=img_url)
+        db.session.add(new_food)
+        db.session.commit()
+
+    return render_template('add_food.html', form=form)
+
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        password = form.password.data
+        result = db.session.execute(db.select(User).where(User.email == form.email.data))
+        user = result.scalar()
+        if not user:
+            flash("That email does not exist, please try again.")
+            return redirect(url_for('login'))
+        # Password incorrect
+        elif not check_password_hash(user.password, password):
+            flash('Password incorrect, please try again.')
+            return redirect(url_for('login'))
+        else:
+            login_user(user)
+            print(user)
+            print(current_user)
+            return redirect(url_for('home'))
+
+    return render_template("login.html", form=form, current_user=current_user)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -16,7 +16,7 @@
         {% endblock %}
 </head>
 
-<body>
+<body class="text-bg-dark">
 <header class="p-3 text-bg-dark">
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
@@ -25,7 +25,7 @@
         </a>
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="#" class="nav-link px-2 text-secondary">Home</a></li>
+          <li><a href="/" class="nav-link px-2 text-secondary">Home</a></li>
           <li><a href="#" class="nav-link px-2 text-white">Features</a></li>
           <li><a href="#" class="nav-link px-2 text-white">Pricing</a></li>
           <li><a href="#" class="nav-link px-2 text-white">FAQs</a></li>
@@ -37,60 +37,43 @@
         </form>
 
         <div class="text-end">
-          <button type="button" class="btn btn-outline-light me-2">Login</button>
-          <button type="button" class="btn btn-warning">Sign-up</button>
+
+            {% if not current_user.is_authenticated: %}
+            <a href="{{ url_for('login') }}" id="login">
+          <button type="button" class="btn btn-warning me-2">Login</button>
+            </a>
+            <a href="{{ url_for('register') }}">
+          <button type="button" class="btn btn-dark">Register</button>
+            </a>
+            {% else: %}
+            <a href="{{ url_for('logout') }}">
+          <button type="button" class="btn btn-danger">Log Out</button>
+            </a>
+            {% endif %}
+
         </div>
       </div>
     </div>
   </header>
 
 
-<div class="bg-dark text-secondary px-4 py-5 text-center">
-    <div class="py-5">
-      <h1 class="display-5 fw-bold text-white">Welcome to MealMate:</h1>
-      <div class="col-lg-6 mx-auto">
-        <p class="fs-5 mb-4">Your hassle-free solution for daily dining decisions! No need for tedious meal planning;
-            simply input your favorite dishes, and let our app do the work.  Each day, discover a curated selection of
-            meals based on your preferences. Enjoy the ease of not having to make a weekly plan – MealMate is here to
-            surprise you with your own favorite dishes, ensuring every day brings a delightful and stress-free dining
-            experience. Embrace spontaneity in your meals without sacrificing the flavors you love.
-            Get ready to let MealMate simplify your daily dining choices!</p>
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center my-5">
-          <button type="button" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold">Add a Meal</button>
-          <button type="button" class="btn btn-outline-light btn-lg px-4">Create Weekly Menu</button>
-        </div>
-      </div>
-    </div>
-  </div>
+ {% block content %}
 
-<div class="bg-dark text-secondary px-4 py-5 text-center">
-    <div class="py-5">
-      <h1 class="display-5 fw-bold text-white">Some of our suggestions:</h1>
-    </div>
-  </div>
+{% endblock %}
 
-    <div class="album py-5 bg-dark text-secondary">
-    <div class="container">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-          {% for food in example_food %}
-        <div class="col">
-          <div class="card shadow-sm">
-            <img src="{{ food.img_url }}" class="card-img-top" height="300" alt="Picture of a meal">
-            <div class="card-body">
-              <p class="card-text"> {{ food.name }}</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Add to menu</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-          {% endfor %}
-      </div>
-    </div>
-  </div>
 
+<div class="container">
+  <footer class="py-3 my-5">
+    <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+      <li class="nav-item"><a href="#" class="nav-link px-2 text-light">Home</a></li>
+      <li class="nav-item"><a href="#" class="nav-link px-2 text-light">Features</a></li>
+      <li class="nav-item"><a href="#" class="nav-link px-2 text-light">Pricing</a></li>
+      <li class="nav-item"><a href="#" class="nav-link px-2 text-light">FAQs</a></li>
+      <li class="nav-item"><a href="#" class="nav-link px-2 text-light">About</a></li>
+    </ul>
+    <p class="text-center text-light">© 2023 Company, Inc</p>
+  </footer>
+</div>
 
 </body>
 </html>
