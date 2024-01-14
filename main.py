@@ -120,6 +120,7 @@ def register():
     return render_template("register.html", form=form, current_user=current_user)
 
 
+
 @app.route('/add_meal/<int:user_id>', methods=["GET", "POST"])
 def add_meal(user_id):
     form = MealForm()
