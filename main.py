@@ -6,8 +6,9 @@ from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import DataRequired
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
+import random
 
-days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
 
 
 app = Flask(__name__)
@@ -174,7 +175,10 @@ def login():
 def show_menu(user_id):
     menu = Food.query.filter_by(user_id=user_id).all()
 
-    return render_template("menu.html", user_id=user_id, menu=menu)
+    random.shuffle(menu)
+
+    days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    return render_template("menu.html", user_id=user_id, menu=menu, days_of_week=days_of_week)
 
 
 
