@@ -19,14 +19,19 @@
             <a href="{{ url_for('add_meal', user_id=current_user.id) }}">
           <button type="button" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold">Add a Meal</button>
             </a>
-          <button type="button" class="btn btn-outline-light btn-lg px-4">Create Weekly Menu</button>
+          <form method="GET" action="{{ url_for('show_menu', user_id=current_user.id) }}">
+            <button type="submit" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold">Create menu</button>
+            </form>
 
 
             {% else %}
-            <a href="/">
+            <a href="{{ url_for('login') }}">
           <button type="button" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold">Add a Meal</button>
             </a>
+
+            <a href="{{ url_for('login') }}">
           <button type="button" class="btn btn-outline-light btn-lg px-4">Create Weekly Menu</button>
+                </a>
             {% endif %}
 
 

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
@@ -6,6 +6,8 @@ from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import DataRequired
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
+
+days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 
 app = Flask(__name__)
@@ -76,6 +78,8 @@ class MealForm(FlaskForm):
     recipe = StringField("Recipe:")
     img_url = StringField("Image Link:", validators=[DataRequired()])
 
+    submit = SubmitField("Add!")
+
 
 class LoginForm(FlaskForm):
     email = StringField("Email:", validators=[DataRequired()])
@@ -120,12 +124,11 @@ def register():
     return render_template("register.html", form=form, current_user=current_user)
 
 
-
 @app.route('/add_meal/<int:user_id>', methods=["GET", "POST"])
 def add_meal(user_id):
     form = MealForm()
     if form.validate_on_submit():
-        user_id = user_id,
+
         name = form.name.data
         recipe = form.recipe.data
         img_url = form.img_url.data
@@ -133,6 +136,12 @@ def add_meal(user_id):
         new_food = Food(user_id=user_id, name=name, recipe=recipe, img_url=img_url)
         db.session.add(new_food)
         db.session.commit()
+
+        session['form_submitted'] = True
+
+        return redirect(url_for('add_meal', user_id=user_id))
+
+    form_submitted = session.pop('form_submitted', False)
 
     return render_template('add_food.html', form=form)
 
@@ -158,6 +167,15 @@ def login():
             return redirect(url_for('home'))
 
     return render_template("login.html", form=form, current_user=current_user)
+
+
+@app.route('/menu/<int:user_id>', methods=["GET", "POST"])
+@login_required
+def show_menu(user_id):
+    menu = Food.query.filter_by(user_id=user_id).all()
+
+    return render_template("menu.html", user_id=user_id, menu=menu)
+
 
 
 @app.route('/logout')

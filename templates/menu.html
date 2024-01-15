@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="bg-dark text-secondary px-4 py-5 text-center">
+    <div class="py-5">
+      <h1 class="display-5 fw-bold text-white">Here's your menu for this week:</h1>
+    </div>
+
+
+    <div class="album py-5 bg-dark text-secondary">
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          {% for food in menu %}
+        <div class="col">
+            <h2>Segunda</h2>
+          <div class="card shadow-sm">
+            <img src="{{ food.img_url }}" class="card-img-top" height="300" alt="Picture of a meal">
+            <div class="card-body">
+              <p class="card-text"> {{ food.name }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Add to menu</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+          {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
