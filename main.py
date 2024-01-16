@@ -92,7 +92,25 @@ class LoginForm(FlaskForm):
 def home():
     example_food = ExampleFood.query.all()
 
+    if request.method == 'POST' and current_user.is_authenticated:
+        food_id_to_add = request.form.get('add_to_menu')
+
+        if food_id_to_add:
+            food = ExampleFood.query.get(int(food_id_to_add))
+
+            if food:
+                new_food = Food(user_id=current_user.id, name=food.name, recipe=food.recipe, img_url=food.img_url)
+                db.session.add(new_food)
+                db.session.commit()
     return render_template("index.html", example_food=example_food)
+
+
+def add_to_menu(food_id, user_id):
+    food = ExampleFood.query.get(food_id)
+    if food:
+        new_food = Food(user_id=user_id, name=food.name, recipe=food.recipe, img_url=food.img_url)
+        db.session.add(new_food)
+        db.session.commit()
 
 
 @app.route('/register', methods=["GET", "POST"])
